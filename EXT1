@@ -1,0 +1,118 @@
+typedef struct{
+    int Day;
+	int Month;
+	int Year;
+}date;
+
+typedef struct{
+    char Title[70];
+	char AuthorName[70];
+	char Publisher[70];
+	int ISBN;
+	date Published;
+	int copies;
+	int copies_available;
+	char Category[30];
+}Books;
+int isint(int x){
+if(1%x==1)
+    return 1;
+else
+    return 0;
+}
+
+int check_int(int n){
+if(isint(n)== 0){
+    printf("Please enter an integer");
+    return 1;
+}
+else if(n<0){
+    printf("Please enter an integer bigger than 0");
+    return 1;
+}
+else
+    return 0;
+}
+Books NewBook(Books *BookArray){
+int i=0;
+while(BookArray[i].ISBN!=0){
+    i++;
+}
+i=i+1;
+printf("Please Enter Book title " );
+fgets(BookArray[i].Title,20,stdin);
+printf("Please enter Author Name ");
+fgets(BookArray[i].AuthorName,20,stdin);
+printf("Please enter Date Published as DD/MM/YYYY ");
+scanf("%d %d %d",&BookArray[i].Published.Day,&BookArray[i].Published.Month,&BookArray[i].Published.Year);
+printf("Insert Book ISBN carefully please ");
+scanf("%d",&BookArray[i].ISBN);
+printf("Enter Copy Number ");
+scanf("%d",&BookArray[i].copies);
+BookArray[i].copies_available=BookArray[i].copies;
+//fflush(stdin);
+printf("Enter the book category");
+fgets(BookArray[i].Category,30,stdin);
+printf("\nBook Successfully added ");
+return *BookArray;
+}
+void searchBook(Books *BookArray){
+Books SearchArray1[30],SearchArray2[30],SearchArray3[30];
+int choice,flag,ISB,i;
+char stitle[20],sauthor[20],scat[20];
+printf("1- Specific search by ISBN\n2- Search by title ,Author and/or category");
+scanf("%d",&choice);
+do{
+    printf("Please enter either 1 or 2 for which search method you want");
+    scanf("%d",&choice);
+}while(choice!=1&&choice!=0);
+flag=1
+if(choice==1){
+    printf("Please enter ISBN");
+    scanf("%d",&ISB);
+    for(i=0;flag=1;i++){
+       if(BookArray[i].ISBN==ISB){
+        printf("Book searched for by ISBN is %s\nAuthor is %s\nISBN: %d",BookArray[i].Title,BookArray[i].AuthorName,BookArray[i].ISBN);
+        flag=1;
+       }
+    }
+}
+else{
+    printf("Enter Title, Author Name and/or category");
+    fgets(stitle,20,stdin);
+    fgets(author,20,stdin);
+    fgets(scat,20,stdin);
+    for(i=0;;i++)
+}
+}
+Books AddCopies(Books *BookArray){
+int ISB,i,flag=0,n;
+printf("Please enter book ISBN");
+scanf("%d",&ISB);
+for(i=0;flag=1;i++){
+    if(BookArray[i].ISBN==ISB){
+        flag=1;
+        printf("Book wanted is %s \n",BookArray[i].Title);
+    }
+}
+printf("How many copies do you want added? %d");
+scanf("%d",&n);
+BookArray[i].copies+=3;
+printf("Copies have been successfully added ");
+}
+Books DeleteBook(Books *BookArray){
+int ISB;
+printf("Please enter ISBN of book you want deleted");
+scanf("%d",&ISB);
+
+}
+
+int main()
+{
+    Books BookArray[100];
+    NewBook(&BookArray);
+    //printf("\nName %s \n ",BookArray[1].Title);
+
+
+    return 0;
+}
