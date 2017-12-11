@@ -127,12 +127,12 @@ int CheckPhone(int n)
 }
 int CheckISBN(int n)
 {
-    if(n/10000000000000!=0 || n/1000000000000==0 || CheckInt(n)==0)
+    if(a/10000000000000>1 || a/1000000000000<1 || CheckInt(n)==0)
     {
         printf("%d",CheckInt(n));
-        if(n/10000000000000!=0)
+        if(a/10000000000000!=0)
             printf("Yes");
-        if(n/1000000000000==0)
+        if(a/1000000000000==0)
             printf("Maybe");
         return 0;
     }else
@@ -709,7 +709,7 @@ void Save()
     c=fopen("Borrows.txt", "w");
     while(MembersArray[i].ID>0)
     {
-        fprintf(a,"%s,%s,%d,%d,%s,%s,%d,%d,%s\n",MembersArray[i].Surname,MembersArray[i].LastName,MembersArray[i].ID,MembersArray[i].Address.bldg,MembersArray[i].Address.city,MembersArray[i].Address.street,MembersArray[i].PhoneNumber,MembersArray[i].Age,MembersArray[i].mail);
+        fprintf(a,"%d,%s,%s,%d,%s,%s,%d,%s,%d\n",MembersArray[i].ID,MembersArray[i].LastName,MembersArray[i].Surname,MembersArray[i].Address.bldg,MembersArray[i].Address.street,MembersArray[i].Address.city,MembersArray[i].Age,MembersArray[i].mail,MembersArray[i].PhoneNumber);
         i++;
     }
     i=0;
@@ -768,6 +768,7 @@ void BookManagement()
 
 void MemberManagement()
 {
+    system("cls");
     int checkint;
     printf("Please choose an action (1-3): \n");
 		printf(" 1- Register a new members\n");
@@ -775,73 +776,71 @@ void MemberManagement()
 		printf(" 3- Display all members data\n");
 	do{
         scanf("%d",&input5);
-        checkint=isdigit(input5);
-        if(input5>3 || input5<1 || checkint==0)
+        if(input5>3 || input5<1 || CheckInt(input5)==0)
         printf("Please enter an integer (1-3)!\n");
         else{
         switch(input5)
         {
             case 1:
-                NewMember();					/* Calls a function through which a new member will be created in the members File */
+                NewMember();		
                 break;
             case 2:
-                DeleteMember();					/* Calls a function that deletes a member's data from the members file */
+                DeleteMember();	
                 break;
-	}}}while(input5>3 || input5<1 || checkint==0);
+	}}}while(input5>3 || input5<1 || CheckInt(input5)==0);
     printf("Returning back to main menu ...\n");
     MainMenu();
 }
 
 void BorrowManagement()
 {
-    int checkint;
+    system("cls");
     printf("Please choose an action (1-2): \n");
 		printf(" 1- Register a new borrowing transaction\n");
 		printf(" 2- Register the return of a book\n");
 		printf(" 3- Display all borrowing transactions\n");
     do{
         scanf("%d",&input6);
-        checkint=isdigit(input6);
-        if(input6>3 || input6<1 || checkint==0)
+        if(input6>3 || input6<1 || CheckInt(input6)==0)
         printf("Please enter an integer (1-3)!\n");
         else{
         switch(input6)
         {
             case 1:
-                NewBorrow();					/* Calls a function through which a new borrowing transaction will be created */
+                NewBorrow();			
                 break;
             case 2:
-                ReturnBorrow();					/* Calls a function that confirms the return of a book */
+                ReturnBorrow();			
                 break;
             case 3:
-                DisplayBorrowings();					/* Displays all books */
+                DisplayBorrowings();					
                 break;
-	}}}while(input6>3 || input6<1 || checkint==0);
+	}}}while(input6>3 || input6<1 || CheckInt(input6)==0);
     printf("Returning back to main menu ...\n");
     MainMenu();
 }
 
 void AdminActions()
 {
+    system("cls");
     int checkint;
     printf("Please choose an action (1-2): \n");
 		printf(" 1- Display Overdue Books\n");
 		printf(" 2- Display the most popular books\n");
     do{
         scanf("%d",&input7);
-        checkint=isdigit(input7);
-        if(input7>3 || input7<1 || checkint==0)
+        if(input7>3 || input7<1 || CheckInt(input7)==0)
         printf("Please enter an integer (1-2)!\n");
         else{
         switch(input6)
         {
             case 1:
-                ODbooks();					/* Calls a function through which a new member will be created in the members File */
+                ODbooks();					
                 break;
             case 2:
-                PopBooks();					/* Calls a function that deletes a member's data from the members file */
+                PopBooks();					
                 break;
-	}}}while(input7>3 || input7<1 || checkint==0);
+	}}}while(input7>3 || input7<1 || CheckInt(input7)==0);
 	printf("Returning back to main menu ...");
 }
 
@@ -973,7 +972,7 @@ int main()
     {
         while (flag==0)
         {
-         fscanf(k, "%d,%d,%d,%d,%d,%d,%d,%d",&BorrowsArray[c3].ISBN,&BorrowsArray[c3].ID,&BorrowsArray[c3].Datedue.Day,&BorrowsArray[c3].Datedue.Month,&BorrowsArray[c3].Datedue.Year,&BorrowsArray[c3].Dateissued.Day,&BorrowsArray[c3].Dateissued.Month,&BorrowsArray[c3].Dateissued.Year);
+         fscanf(k, "%d,%d,%d,%d,%d,%d,%d,%d",&BorrowsArray[c3].Transaction,&BorrowsArray[c3].ISBN,&BorrowsArray[c3].ID,&BorrowsArray[c3].Datedue.Day,&BorrowsArray[c3].Datedue.Month,&BorrowsArray[c3].Datedue.Year,&BorrowsArray[c3].Dateissued.Day,&BorrowsArray[c3].Dateissued.Month,&BorrowsArray[c3].Dateissued.Year);
          fscanf(k, "\n");
          BorrowsArray[c3].Transaction=c3+1;
          if(BorrowsArray[c3].ISBN==0)
