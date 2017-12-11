@@ -41,7 +41,7 @@ typedef struct
     char LastName[50];
     int ID;
     Address Address;
-    int PhoneNumber;
+    long PhoneNumber;
     int Age;
     char mail[50];
 }Member;
@@ -51,7 +51,7 @@ typedef struct
 	char Title[70];
 	char AuthorName[70];
 	char Publisher[70];
-	int ISBN;
+	char ISBN[20];
 	Date Publication;
 	int copies;
 	int copies_available;
@@ -61,7 +61,7 @@ typedef struct
 typedef struct
 {
 	int Transaction;
-	int ISBN;
+	char ISBN[20];
 	int ID;
 	Date Dateissued;
 	Date Datedue;
@@ -70,7 +70,7 @@ typedef struct
 
 typedef struct
 {
-	int ISBN;
+	char ISBN[20];
 	int occur;
 	char title[70];
 }BorrowedBook;
@@ -125,18 +125,17 @@ int CheckPhone(int n)
     else
         return 1;
 }
-int CheckISBN(int n)
+int CheckISBN(char *n)
 {
-    if(a/10000000000000>1 || a/1000000000000<1 || CheckInt(n)==0)
+    int i=0,digcount=0;
+    for(i=0;n[i]!='\0';i++)
     {
-        printf("%d",CheckInt(n));
-        if(a/10000000000000!=0)
-            printf("Yes");
-        if(a/1000000000000==0)
-            printf("Maybe");
+        if(CheckInt(n[i]!=0))
+            digcount++;
+    }
+    if(digcount<13 || digcount>13)
         return 0;
-    }else
-    return 1;
+    else return 1;
 }
 int CheckID(int n)
 {
@@ -153,11 +152,11 @@ void ODbooks()
     for(i=0;i<=LastBorrow;i++)
     {
         if (BorrowsArray[i].Datedue.Year>DateTime.wYear)
-            printf("%d \t %d \t %d \t %d/%d/%d",BorrowsArray[i].Transaction, BorrowsArray[i].ID,BorrowsArray[i].ISBN, BorrowsArray[i].Datedue.Day,BorrowsArray[i].Datedue.Month,BorrowsArray[i].Datedue.Year);
+            printf("%d \t %d \t %s \t %d/%d/%d",BorrowsArray[i].Transaction, BorrowsArray[i].ID,BorrowsArray[i].ISBN, BorrowsArray[i].Datedue.Day,BorrowsArray[i].Datedue.Month,BorrowsArray[i].Datedue.Year);
         else if((BorrowsArray[i].Datedue.Year=DateTime.wYear) && (BorrowsArray[i].Datedue.Month>DateTime.wMonth))
-            printf("%d \t %d \t %d \t %d/%d/%d",BorrowsArray[i].Transaction, BorrowsArray[i].ID,BorrowsArray[i].ISBN, BorrowsArray[i].Datedue.Day,BorrowsArray[i].Datedue.Month,BorrowsArray[i].Datedue.Year);
+            printf("%d \t %d \t %s \t %d/%d/%d",BorrowsArray[i].Transaction, BorrowsArray[i].ID,BorrowsArray[i].ISBN, BorrowsArray[i].Datedue.Day,BorrowsArray[i].Datedue.Month,BorrowsArray[i].Datedue.Year);
         else if((BorrowsArray[i].Datedue.Year=DateTime.wYear) && (BorrowsArray[i].Datedue.Month>DateTime.wMonth) && (BorrowsArray[i].Datedue.Day>DateTime.wDay));
-            printf("%d \t %d \t %d \t %d/%d/%d",BorrowsArray[i].Transaction, BorrowsArray[i].ID,BorrowsArray[i].ISBN, BorrowsArray[i].Datedue.Day,BorrowsArray[i].Datedue.Month,BorrowsArray[i].Datedue.Year);
+            printf("%d \t %d \t %s \t %d/%d/%d",BorrowsArray[i].Transaction, BorrowsArray[i].ID,BorrowsArray[i].ISBN, BorrowsArray[i].Datedue.Day,BorrowsArray[i].Datedue.Month,BorrowsArray[i].Datedue.Year);
     }
 
 }
@@ -170,7 +169,6 @@ void PopBooks()
 
     for(j=0;j<100;j++)
     {
-        SearchArray[j].ISBN=0;
         SearchArray[j].occur=0;
     }
 
@@ -179,11 +177,11 @@ void PopBooks()
 
         for(k=0;k<100;k++)
         {
-            if(BorrowsArray[i].ISBN==SearchArray[k].ISBN)
+            if(strcmp(BorrowsArray[i].ISBN,SearchArray[k].ISBN)==0)
             SearchArray[k].occur++;
             else
             {
-                SearchArray[Last].ISBN=BorrowsArray[i].ISBN;
+                strcpy(SearchArray[Last].ISBN,BorrowsArray[i].ISBN);
                 SearchArray[Last].occur++;
                 Last++;
             }
@@ -193,7 +191,7 @@ void PopBooks()
     {
         for(j=0;j<=LastBook;j++)
         {
-            if(SearchArray[i].ISBN==BooksArray[j].ISBN)
+            if(strcmp(BorrowsArray[i].ISBN,SearchArray[j].ISBN)==0)
                 strcpy(SearchArray[i].title,BooksArray[j].Title);
         }
     }
@@ -202,22 +200,34 @@ void PopBooks()
         for(j=0;j<=Last;j++)
         {
             if(SearchArray[i].occur<SearchArray[j].occur)
-                temp=SearchArray[i];
+                strcpy(temp.ISBN,SearchArray[i].ISBN);
+                strcpy(temp.title,SearchArray[i].title);
+                temp.occur=SearchArray[i].occur;
+
                 SearchArray[i]=SearchArray[j];
+
+                strcpy(SearchArray[i].ISBN,SearchArray[j].ISBN);
+                strcpy(SearchArray[i].title,SearchArray[j].title);
+                SearchArray[i].occur=SearchArray[j].occur;
+
                 SearchArray[j]=temp;
+
+                strcpy(SearchArray[j].ISBN,temp.ISBN);
+                strcpy(SearchArray[j].title,temp.title);
+                SearchArray[j].occur=temp.occur;
         }
     }
     printf("Title \t ISBN \t Times Borrowed");
     for(i=0;i<=5;i++)
     {
-        printf("%s \t %d \t %d",SearchArray[i].title,SearchArray[i].ISBN,SearchArray[i].occur);
+        printf("%s \t %s \t %d",SearchArray[i].title,SearchArray[i].ISBN,SearchArray[i].occur);
     }
 }
 
 void NewBorrow()
 {
     int checkid,checkdate,i=0,found=0,flag=0;
-    int checkisbn,found1=0;
+    int found1=0;
     Borrow temp;
     printf("Please enter the ID of the borrowing member:\n");
     scanf("%d",&temp.ID);
@@ -246,13 +256,12 @@ void NewBorrow()
         }
         else{
         printf("Please enter the ISBN of the book to be borrowed:\n");
-        scanf("%d",&temp.ISBN);
-        checkisbn=CheckISBN(temp.ISBN);
-        if(checkisbn==0)
-            printf("Please enter a legitimate ISBN! ISBNs are 13 digits long.\n");
+        fgets(temp.ISBN,sizeof(temp.ISBN),stdin);
+        if(CheckISBN(temp.ISBN)==0)
+            printf("Please enter a legitimate ISBN!(ex: 978-3-16-148410-0)\n");
         for(i=0;(found1==0);i++)
         {
-            if(BooksArray[i].ISBN==temp.ISBN)
+            if(strcmp(BooksArray[i].ISBN,temp.ISBN))
             {
                 found1=1;
                 if(BooksArray[i].copies_available>0)
@@ -271,18 +280,18 @@ void NewBorrow()
         {
             BorrowsArray[LastBorrow+1].Transaction=BorrowsArray[LastBorrow].Transaction+1;
             do{
-                printf("Please enter Date issued. Day first, then Month, then Year: \n");
+                printf("Please enter Date issued. (DD, enter, MM, enter, YY, enter) \n");
                 scanf("%d %d %d",&temp.Dateissued.Day,&temp.Dateissued.Month,&temp.Dateissued.Year);
                 checkdate=CheckDate(temp.Dateissued);
                 if(checkdate==0)
                     printf("Please enter a date that is not later than today! \n");
         }while(checkdate==0);
             do{
-                printf("Please enter Date due to return. Day first, then Month, then Year: \n");
+                printf("Please enter Date due to return. (DD, enter, MM, enter, YY, enter) \n");
                 scanf("%d %d %d",&temp.Datedue.Day,&temp.Datedue.Month,&temp.Datedue.Year);
                 checkdate=CheckDate(temp.Dateissued);
                 if(checkdate==0)
-                    printf("Please enter a date that is not later than today! \n");
+                    printf("Please enter a date that is not later than today!\n");
         if(temp.Dateissued.Year>temp.Datedue.Year)
         {
             printf("Date entered can't be after today's date!\n");
@@ -300,6 +309,15 @@ void NewBorrow()
         }
         }while(checkdate==0);
         }}}
+        BorrowsArray[LastBorrow].Transaction=LastTrans-1;
+        BorrowsArray[LastBorrow].ID=temp.ID;
+        BorrowsArray[LastBorrow].Dateissued.Day=temp.Dateissued.Day;
+        BorrowsArray[LastBorrow].Dateissued.Month=temp.Dateissued.Month;
+        BorrowsArray[LastBorrow].Dateissued.Year=temp.Dateissued.Year;
+        BorrowsArray[LastBorrow].Datedue.Day=temp.Datedue.Day;
+        BorrowsArray[LastBorrow].Datedue.Month=temp.Datedue.Month;
+        BorrowsArray[LastBorrow].Datedue.Year=temp.Datedue.Year;
+        strcpy(BorrowsArray[LastBorrow].ISBN,temp.ISBN);
         printf("Borrow transaction added successfully!");
         LastBorrow++;
 }
@@ -321,7 +339,7 @@ void ReturnBorrow()
         printf("This transaction number is not registered. Try again!");
     }while(found==0);
     do{
-            printf("Please enter Date of return. Day first, then Month, then Year: \n");
+            printf("Please enter Date of return. (DD, enter, MM, enter, YY, enter) \n");
             scanf("%d %d %d",&temp.Day,&temp.Month,&temp.Year);
             checkdate=CheckDate(temp);
             if(checkdate==0)
@@ -347,7 +365,7 @@ int i=0;
     printf("Transaction \t ISBN \t ID of Borrower \t Issued Date \t Due Date\n");
     for(i=0;i<LastBorrow;i++)
     {
-        printf("%d \t %d \t %d \t %d/%d/%d \t %d/%d/%d\n",BorrowsArray[i].Transaction,BorrowsArray[i].ISBN,BorrowsArray[i].ID,BorrowsArray[i].Dateissued.Day,BorrowsArray[i].Dateissued.Month,BorrowsArray[i].Dateissued.Year,BorrowsArray[i].Datedue.Day,BorrowsArray[i].Datedue.Month,BorrowsArray[i].Datedue.Year);
+        printf("%d \t %s \t %d \t %d/%d/%d \t %d/%d/%d\n",BorrowsArray[i].Transaction,BorrowsArray[i].ISBN,BorrowsArray[i].ID,BorrowsArray[i].Dateissued.Day,BorrowsArray[i].Dateissued.Month,BorrowsArray[i].Dateissued.Year,BorrowsArray[i].Datedue.Day,BorrowsArray[i].Datedue.Month,BorrowsArray[i].Datedue.Year);
     }
 }
 
@@ -427,7 +445,7 @@ void NewMember()
     }while(CheckInt(temp.Age)==0);
     do{
     printf("\nEnter the member's phone number");
-    scanf("%d",&temp.PhoneNumber);
+    scanf("%ld",&temp.PhoneNumber);
     if(CheckInt(temp.PhoneNumber)==0)
         printf("\nPlease enter an integer!");
     }while(CheckInt(temp.Age)==0);
@@ -451,17 +469,19 @@ void DisplayBooks()
     printf("\t Book Title \t Author Name \t ISBN \t Category \n");
     for(i=0;i<LastBook;i++)
     {
-        printf("%d \t %s \t %s \t %d \t %s \n",i+1,BooksArray[i].Title,BooksArray[i].AuthorName,BooksArray[i].ISBN,BooksArray[i].Category);
+        printf("%d \t %s \t %s \t %s \t %s \n",i+1,BooksArray[i].Title,BooksArray[i].AuthorName,BooksArray[i].ISBN,BooksArray[i].Category);
     }
 }
 
 void AddCopies()
 {
-    int ISB,i,flag=0,n;
+    int i,flag=0,n;
+    Book temp;
     printf("Please enter book ISBN");
-    scanf("%d",&ISB);
+    fgets(temp.ISBN,sizeof(temp.ISBN),stdin);
     for(i=0;(flag==1);i++){
-        if(BooksArray[i].ISBN==ISB){
+        if(strcmp(BooksArray[i].ISBN,temp.ISBN)==0)
+        {
             flag=1;
             printf("Book wanted is %s \n",BooksArray[i].Title);
         }
@@ -475,15 +495,16 @@ void AddCopies()
 
 void DeleteBook()
 {
-    int isbn,checkisbn,i,found=0;
-    printf("Please enter the ISBN of the book to be deleted:\n");
-    scanf("%d",&isbn);
-    checkisbn=CheckISBN(isbn);
-    if(checkisbn==0)
-        printf("Please enter a legitimate ISBN! ISBNs are 13 digits long.");
+    Book temp;
+    system("cls");
+    int i,found=0;
+    printf("Please enter the ISBN of the book to be deleted: (ex: 978-3-16-148410-0)\n");
+    fgets(temp.ISBN,sizeof(temp.ISBN),stdin);
+    if(CheckISBN(temp.ISBN)==0)
+        printf("Please enter a legitimate ISBN!(ex: 978-3-16-148410-0)");
     for(i=0;(found==0);i++)
     {
-        if(BooksArray[i].ISBN==isbn)
+        if(strcmp(BooksArray[i].ISBN,temp.ISBN)==0)
             found=1;
     }
     if(found==0)
@@ -492,6 +513,7 @@ void DeleteBook()
     {
         for(i=0;i>99;i++)
         {
+
             BooksArray[i]=BooksArray[i+1];
         }
     }
@@ -503,8 +525,8 @@ void NewBook()
 {
     system("cls");
     Book temp;
-    int i=0;
-    int checkdate,checkisbn,checkint;
+    int i=0,flag=0;
+    int checkdate;
     printf("Please enter the book title:");
     fgetc(stdin);
     fgets(temp.Title,sizeof(temp.Title),stdin);
@@ -513,45 +535,42 @@ void NewBook()
     printf("\nPlease enter the publisher's name:");
     fgets(temp.Publisher,sizeof(temp.Publisher),stdin);
     do{
-    printf("\nPlease enter Date Published. (DD MM YY");
+    printf("\nPlease enter Date Published:(DD, enter, MM, enter, YY, enter)");
     scanf("%d %d %d",&temp.Publication.Day,&temp.Publication.Month,&temp.Publication.Year);
     checkdate=CheckDate(temp.Publication);
     if(checkdate==0)
         printf("\nPlease enter a date that is not later than today!");
     }while(checkdate==0);
     do{
-    printf("\nEnter the book ISBN (all in digits):");
-    scanf("%d",&temp.ISBN);
-    checkisbn=CheckISBN(temp.ISBN);
-    printf("%d",checkisbn);
-    if(checkisbn==0)
-        printf("\nPlease enter a legitimate ISBN! ISBNs are 13 digits long.");
+    printf("\nEnter the book ISBN (ex: 978-3-16-148410-0):");
+    fgets(temp.ISBN,sizeof(temp.ISBN),stdin);
+    if(CheckISBN(temp.ISBN)==0)
+        printf("\nPlease enter a legitimate ISBN! (ex: 978-3-16-148410-0)");
     for(i=0;i<=LastBook;i++)
     {
         if(temp.ISBN==BooksArray[i].ISBN)
         {
-            checkisbn=0;
+            flag=1;
             printf("This book ISBN is already registered in the system. You can add new copies or enter another ISBN!");
         }
     }
-    }while(checkisbn==0);
+    }while(CheckISBN(temp.ISBN)==0 || flag==1);
     do{
     printf("Enter the number of copies:\n");
     scanf("%d",&temp.copies);
-    checkint=isdigit(temp.copies);
-    if(checkint==0)
+    if(CheckInt(temp.copies)==0)
         printf("Please enter an integer! \n");
-    }while(checkint==0);
+    }while(CheckInt(temp.copies)==0);
     temp.copies_available=temp.copies;
     printf("Enter the book category:\n");
     fgets(temp.Category,sizeof(temp.Category),stdin);
 
-    BooksArray[LastBook].ISBN=temp.ISBN;
     BooksArray[LastBook].copies=temp.copies;
     BooksArray[LastBook].copies_available=temp.copies_available;
     BooksArray[LastBook].Publication.Day=temp.Publication.Day;
     BooksArray[LastBook].Publication.Month=temp.Publication.Month;
     BooksArray[LastBook].Publication.Year=temp.Publication.Year;
+    strcpy(BooksArray[LastBook].ISBN,temp.ISBN);
     strcpy(BooksArray[LastBook].Title,temp.Title);
     strcpy(BooksArray[LastBook].AuthorName,temp.AuthorName);
     strcpy(BooksArray[LastBook].Category,temp.Category);
@@ -563,23 +582,23 @@ void NewBook()
 
 void SearchBook()
 {
-    int checkint,i,j=0,k=0,l=0,checkisbn=0,isbn=0,found=0,strequal;
+    system("cls");
+    int i,j=0,k=0,l=0,found=0,strequal;
     char *strpart;
     Book temp;
     Book SearchArray1[100], SearchArray2[100], SearchArray3[100];
     for(i=0;i>100;i++)
     {
-        SearchArray1[i].ISBN=0;
-        SearchArray2[i].ISBN=0;
-        SearchArray3[i].ISBN=0;
+        SearchArray1[i].copies=0;
+        SearchArray2[i].copies=0;
+        SearchArray3[i].copies=0;
     }
     printf("Please choose an action (1-3): \n");
     printf(" 1- Specific Search by ISBN\n");
     printf(" 2- Search by Title, Author and/or Category\n");
     do{
         scanf("%d",&input8);
-        checkint=isdigit(input8);
-        if(input8>2 || input8<1 || checkint==0)
+        if(input8>2 || input8<1 || CheckInt(input8)==0)
         printf("Please enter an integer (1-2)!\n");
         else{
         switch(input8)
@@ -587,19 +606,20 @@ void SearchBook()
             case 1:
 
                 do{
-                scanf("%d",&isbn);
-                checkisbn=CheckISBN(isbn);
-                if(checkisbn==0)
-                printf("Please enter an IBSN! ISBNs are 13 digits long.\n");
-                }while(checkisbn==0);
+                printf("Please enter an ISBN (ex: 978-3-16-148410-0)");
+                fgetc(stdin);
+                fgets(temp.ISBN,sizeof(temp.ISBN),stdin);
+                if(CheckISBN(temp.ISBN)==0)
+                printf("Please enter an IBSN! (ex: 978-3-16-148410-0) \n");
+                }while(CheckISBN(temp.ISBN)==0);
                 for(i=0;i>LastBook;i++)
                 {
-                    if(BooksArray[i].ISBN==isbn)
+                    if(strcmp(temp.ISBN,BooksArray[i].ISBN)==0)
                         {
                             found=1;
                             printf("Search Results: \n");
                             printf("Book Title \t Author Name \t ISBN \t Category \n");
-                            printf("%s \t %s \t %d \t %s \n",BooksArray[i].Title,BooksArray[i].AuthorName,BooksArray[i].ISBN,BooksArray[i].Category);
+                            printf("%s \t %s \t %s \t %s \n",BooksArray[i].Title,BooksArray[i].AuthorName,BooksArray[i].ISBN,BooksArray[i].Category);
                         }
                 }
                 if(found!=1)
@@ -622,7 +642,7 @@ void SearchBook()
                         strequal=stricmp(temp.Category,BooksArray[i].Category);
                         if(strequal==0)
                         {
-                            SearchArray1[j].ISBN=BooksArray[i].ISBN;
+                            strcpy(SearchArray1[j].ISBN,BooksArray[i].ISBN);
                             strcpy(SearchArray1[j].Title,BooksArray[i].Title);
                             strcpy(SearchArray1[j].Category,BooksArray[i].Category);
                             strcpy(SearchArray1[j].AuthorName,BooksArray[i].AuthorName);
@@ -632,7 +652,7 @@ void SearchBook()
                 }else{
                     for(i=0;i<=LastBook;i++)
                     {
-                        SearchArray1[i].ISBN=BooksArray[i].ISBN;
+                        strcpy(SearchArray1[i].ISBN,BooksArray[i].ISBN);
                         strcpy(SearchArray1[i].Title,BooksArray[i].Title);
                         strcpy(SearchArray1[i].Category,BooksArray[i].Category);
                         strcpy(SearchArray1[i].AuthorName,BooksArray[i].AuthorName);
@@ -645,7 +665,7 @@ void SearchBook()
                         strpart=stristr(SearchArray1[i].Title,temp.Title);
                         if(strpart!='\0')
                         {
-                            SearchArray2[k].ISBN=SearchArray1[i].ISBN;
+                            strcpy(SearchArray2[k].ISBN,SearchArray1[i].ISBN);
                             strcpy(SearchArray2[k].Title,SearchArray1[i].Title);
                             strcpy(SearchArray2[k].Category,SearchArray1[i].Category);
                             strcpy(SearchArray2[k].AuthorName,SearchArray1[i].AuthorName);
@@ -656,7 +676,7 @@ void SearchBook()
                 }else{
                     for(i=0;i<100;i++)
                     {
-                        SearchArray2[i].ISBN=SearchArray1[i].ISBN;
+                        strcpy(SearchArray2[i].ISBN,SearchArray1[i].ISBN);
                         strcpy(SearchArray2[i].Title,SearchArray1[i].Title);
                         strcpy(SearchArray2[i].Category,SearchArray1[i].Category);
                         strcpy(SearchArray2[i].AuthorName,SearchArray1[i].AuthorName);
@@ -669,7 +689,7 @@ void SearchBook()
                         strequal=stricmp(SearchArray2[i].AuthorName,temp.AuthorName);
                         if(strequal==0)
                         {
-                            SearchArray3[l].ISBN=SearchArray2[i].ISBN;
+                            strcpy(SearchArray3[l].ISBN,SearchArray2[i].ISBN);
                             strcpy(SearchArray3[l].Title,SearchArray2[i].Title);
                             strcpy(SearchArray3[l].Category,SearchArray2[i].Category);
                             strcpy(SearchArray3[l].AuthorName,SearchArray2[i].AuthorName);
@@ -680,7 +700,7 @@ void SearchBook()
                 }else{
                     for(i=0;i<100;i++)
                     {
-                        SearchArray3[i].ISBN=SearchArray2[i].ISBN;
+                        strcpy(SearchArray3[i].ISBN,SearchArray2[i].ISBN);
                         strcpy(SearchArray3[i].Title,SearchArray2[i].Title);
                         strcpy(SearchArray3[i].Category,SearchArray2[i].Category);
                         strcpy(SearchArray3[i].AuthorName,SearchArray2[i].AuthorName);
@@ -693,10 +713,10 @@ void SearchBook()
                         printf("Book Title \t Author Name \t ISBN \t Category \n");
                         for(i=0;i<=l;i++)
                         {
-                            printf("%s \t %s \t %d \t %s\n",SearchArray3[i].Title,SearchArray3[i].AuthorName,SearchArray3[i].ISBN,SearchArray3[i].Category);
+                            printf("%s \t %s \t %s \t %s\n",SearchArray3[i].Title,SearchArray3[i].AuthorName,SearchArray3[i].ISBN,SearchArray3[i].Category);
                         }
                 }
-    }}}while(input8>2 || input8<1 || checkint==0);
+    }}}while(input8>2 || input8<1 || CheckInt(input8)==0);
 }
 
 void Save()
@@ -709,19 +729,19 @@ void Save()
     c=fopen("Borrows.txt", "w");
     while(MembersArray[i].ID>0)
     {
-        fprintf(a,"%d,%s,%s,%d,%s,%s,%d,%s,%d\n",MembersArray[i].ID,MembersArray[i].LastName,MembersArray[i].Surname,MembersArray[i].Address.bldg,MembersArray[i].Address.street,MembersArray[i].Address.city,MembersArray[i].Age,MembersArray[i].mail,MembersArray[i].PhoneNumber);
+        fprintf(a,"%d,%s,%s,%d,%s,%s,%d,%s,%ld\n",MembersArray[i].ID,MembersArray[i].LastName,MembersArray[i].Surname,MembersArray[i].Address.bldg,MembersArray[i].Address.street,MembersArray[i].Address.city,MembersArray[i].Age,MembersArray[i].mail,MembersArray[i].PhoneNumber);
         i++;
     }
     i=0;
     while(BooksArray[i].ISBN>0)
     {
-        fprintf(b,"%s,%s,%s,%d,%d,%d,%d,%d,%s\n",BooksArray[i].Title,BooksArray[i].AuthorName,BooksArray[i].Publisher,BooksArray[i].ISBN,BooksArray[i].Publication.Day,BooksArray[i].Publication.Month,BooksArray[i].Publication.Year,BooksArray[i].copies,BooksArray[i].Category);
+        fprintf(b,"%d,%d,%d,%s,%s,%s,%s,%s,%d,%d\n",BooksArray[i].Publication.Day,BooksArray[i].Publication.Month,BooksArray[i].Publication.Year,BooksArray[i].ISBN,BooksArray[i].Title,BooksArray[i].AuthorName,BooksArray[i].Publisher,BooksArray[i].Category,BooksArray[i].copies,BooksArray[i].copies_available);
         i++;
     }
     i=0;
     while(BorrowsArray[i].ISBN>0)
     {
-        fprintf(c,"%d,%d,%d,%d,%d,%d,%d,%d,%d\n",BorrowsArray[i].Transaction,BorrowsArray[i].ISBN,BorrowsArray[i].ID,BorrowsArray[i].Datedue.Day,BorrowsArray[i].Datedue.Month,BorrowsArray[i].Datedue.Year,BorrowsArray[i].Dateissued.Day,BorrowsArray[i].Dateissued.Month,BorrowsArray[i].Dateissued.Year);
+        fprintf(c,"%d,%s,%d,%d,%d,%d,%d,%d,%d\n",BorrowsArray[i].Transaction,BorrowsArray[i].ISBN,BorrowsArray[i].ID,BorrowsArray[i].Datedue.Day,BorrowsArray[i].Datedue.Month,BorrowsArray[i].Datedue.Year,BorrowsArray[i].Dateissued.Day,BorrowsArray[i].Dateissued.Month,BorrowsArray[i].Dateissued.Year);
         i++;
     }
     fclose(a);
@@ -769,7 +789,6 @@ void BookManagement()
 void MemberManagement()
 {
     system("cls");
-    int checkint;
     printf("Please choose an action (1-3): \n");
 		printf(" 1- Register a new members\n");
 		printf(" 2- Delete an existing member\n");
@@ -782,10 +801,10 @@ void MemberManagement()
         switch(input5)
         {
             case 1:
-                NewMember();		
+                NewMember();
                 break;
             case 2:
-                DeleteMember();	
+                DeleteMember();
                 break;
 	}}}while(input5>3 || input5<1 || CheckInt(input5)==0);
     printf("Returning back to main menu ...\n");
@@ -807,13 +826,13 @@ void BorrowManagement()
         switch(input6)
         {
             case 1:
-                NewBorrow();			
+                NewBorrow();
                 break;
             case 2:
-                ReturnBorrow();			
+                ReturnBorrow();
                 break;
             case 3:
-                DisplayBorrowings();					
+                DisplayBorrowings();
                 break;
 	}}}while(input6>3 || input6<1 || CheckInt(input6)==0);
     printf("Returning back to main menu ...\n");
@@ -823,7 +842,6 @@ void BorrowManagement()
 void AdminActions()
 {
     system("cls");
-    int checkint;
     printf("Please choose an action (1-2): \n");
 		printf(" 1- Display Overdue Books\n");
 		printf(" 2- Display the most popular books\n");
@@ -835,10 +853,10 @@ void AdminActions()
         switch(input6)
         {
             case 1:
-                ODbooks();					
+                ODbooks();
                 break;
             case 2:
-                PopBooks();					
+                PopBooks();
                 break;
 	}}}while(input7>3 || input7<1 || CheckInt(input7)==0);
 	printf("Returning back to main menu ...");
@@ -846,6 +864,16 @@ void AdminActions()
 
 void MainMenu()
 {
+
+        printf("Date: %d/%d/%d ",DateTime.wDay,DateTime.wMonth,DateTime.wYear);
+    if((DateTime.wHour+2)<12)
+        printf("Current Time: %d:%d AM \n \n",(DateTime.wHour+2),DateTime.wMinute);
+    else if((DateTime.wHour+2)==12)
+        printf("Current Time: %d:%d PM \n \n",(DateTime.wHour+2),DateTime.wMinute);
+    else if((DateTime.wHour+2)>24)
+        printf("Current Time: %d:%d AM \n \n",(24-DateTime.wHour),DateTime.wMinute);
+    else
+        printf("Current Time: %d:%d PM \n \n",DateTime.wHour-10,DateTime.wMinute);
     printf("Please choose an action (1-6): \n");
     printf(" 1- Book Management\n");
     printf(" 2- Member Management\n");
@@ -919,28 +947,20 @@ int main()
     int c1=0,c2=0,c3=0,i,flag=0;
     FILE *f,*j,*k;
     GetSystemTime(&DateTime);
-    printf("Date: %d/%d/%d ",DateTime.wDay,DateTime.wMonth,DateTime.wYear);
-    if((DateTime.wHour+2)<12)
-        printf("Current Time: %d:%d AM \n \n",(DateTime.wHour+2),DateTime.wMinute);
-    else if((DateTime.wHour+2)==12)
-        printf("Current Time: %d:%d PM \n \n",(DateTime.wHour+2),DateTime.wMinute);
-    else
-        printf("Current Time: %d:%d PM \n \n",DateTime.wHour-10,DateTime.wMinute);
-
     /*Loop to Zero all IDs in MembersArray*/
     for(i=0;i>100;i++)
         MembersArray[i].ID=0;
     /*Loop to Zero all ISBNs in BooksArray*/
     for(i=0;i>100;i++)
-        BooksArray[i].ISBN=0;
+        BooksArray[i].copies=0;
     /*Loop to Zero all IDs in BorrowsArray*/
     for(i=0;i>100;i++)
-        BorrowsArray[i].ISBN=0;
+        BorrowsArray[i].Transaction=0;
     f=fopen("Members.txt", "r");
     if (f != NULL)
     {
         while(flag==0){
-         fscanf(f, "%d,%[^,],%[^,],%d,%[^,],%[^,],%d,%[^,],%d",&MembersArray[c1].ID,MembersArray[c1].LastName,MembersArray[c1].Surname,&MembersArray[c1].Address.bldg,MembersArray[c1].Address.street,MembersArray[c1].Address.city,&MembersArray[c1].Age,MembersArray[c1].mail,&MembersArray[c1].PhoneNumber);
+         fscanf(f, "%d,%[^,],%[^,],%d,%[^,],%[^,],%d,%[^,],%ld",&MembersArray[c1].ID,MembersArray[c1].LastName,MembersArray[c1].Surname,&MembersArray[c1].Address.bldg,MembersArray[c1].Address.street,MembersArray[c1].Address.city,&MembersArray[c1].Age,MembersArray[c1].mail,&MembersArray[c1].PhoneNumber);
          fscanf(f, "\n");
          if(MembersArray[c1].ID==0)
             flag=1;
@@ -956,9 +976,9 @@ int main()
     {
         while(flag==0)
         {
-         fscanf(j,"%d,%[^,],%[^,],%[^,],%[^,],%d,%d,%d,%d,%d",&BooksArray[c2].ISBN,BooksArray[c2].Title,BooksArray[c2].AuthorName,BooksArray[c2].Publisher,BooksArray[c2].Category,&BooksArray[c2].Publication.Day,&BooksArray[c2].Publication.Month,&BooksArray[c2].Publication.Year,&BooksArray[c2].copies,&BooksArray[c2].copies_available);
+         fscanf(j,"%d,%d,%d,%[^,],%[^,],%[^,],%[^,],%[^,],%d,%d",&BooksArray[c2].Publication.Day,&BooksArray[c2].Publication.Month,&BooksArray[c2].Publication.Year,BooksArray[c2].ISBN,BooksArray[c2].Title,BooksArray[c2].AuthorName,BooksArray[c2].Publisher,BooksArray[c2].Category,&BooksArray[c2].copies,&BooksArray[c2].copies_available);
          fscanf(j,"\n");
-         if(BooksArray[c2].ISBN==0)
+         if(BooksArray[c2].copies==0)
             flag=1;
          c2++;
          LastBook++;
@@ -972,10 +992,9 @@ int main()
     {
         while (flag==0)
         {
-         fscanf(k, "%d,%d,%d,%d,%d,%d,%d,%d",&BorrowsArray[c3].Transaction,&BorrowsArray[c3].ISBN,&BorrowsArray[c3].ID,&BorrowsArray[c3].Datedue.Day,&BorrowsArray[c3].Datedue.Month,&BorrowsArray[c3].Datedue.Year,&BorrowsArray[c3].Dateissued.Day,&BorrowsArray[c3].Dateissued.Month,&BorrowsArray[c3].Dateissued.Year);
+         fscanf(k, "%d,%[^,],%d,%d,%d,%d,%d,%d,%d",&BorrowsArray[c3].Transaction,BorrowsArray[c3].ISBN,&BorrowsArray[c3].ID,&BorrowsArray[c3].Datedue.Day,&BorrowsArray[c3].Datedue.Month,&BorrowsArray[c3].Datedue.Year,&BorrowsArray[c3].Dateissued.Day,&BorrowsArray[c3].Dateissued.Month,&BorrowsArray[c3].Dateissued.Year);
          fscanf(k, "\n");
-         BorrowsArray[c3].Transaction=c3+1;
-         if(BorrowsArray[c3].ISBN==0)
+         if(BorrowsArray[c3].Transaction==0)
             flag=1;
          LastTrans++;
          c3++;
