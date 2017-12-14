@@ -696,7 +696,7 @@ void DisplayBooks()
 void SearchBook()
 {
     system("cls");
-    int i,j=0,k=0,l=0,found=0,strequal;
+    int i,j=0,k=0,l=0,found=0;
     char *strpart;
     Book temp;
     Book SearchArray1[100], SearchArray2[100], SearchArray3[100];
@@ -760,8 +760,8 @@ void SearchBook()
                 {
                     for(i=0;i<LastBook;i++)
                     {
-                        strequal=strcmpi(temp.Category,BooksArray[i].Category);
-                        if(strequal==0)
+                        strpart=strstr(strlwr(temp.Category),strlwr(BooksArray[i].Category));
+                        if(strpart!=NULL)
                         {
                             strcpy(SearchArray1[j].ISBN,BooksArray[i].ISBN);
                             strcpy(SearchArray1[j].Title,BooksArray[i].Title);
@@ -782,30 +782,25 @@ void SearchBook()
                 }
                 printf("j=%d\n",j);
                 for(i=0;i<5;i++)
-                printf("%s \t %s \t %s \t %s\n",SearchArray1[i].Title,SearchArray1[i].AuthorName,SearchArray1[i].ISBN,SearchArray1[i].Category);
+                printf("%s. \t %s. \t %s. \t %s.\n",SearchArray1[i].Title,SearchArray1[i].AuthorName,SearchArray1[i].ISBN,SearchArray1[i].Category);
                 printf("\n");
                 if(temp.Title[0]!=NULL)
                 {
                     for(i=0;i<j;i++)
                     {
-                        strpart=strstr(SearchArray1[i].Title,temp.Title);
-                        printf("%d %s\n",i,strpart);
-                        printf("%d %s\n",i,strstr(SearchArray1[4].Title,temp.Title));
-                        if(strpart[0]!=NULL)
+                        strpart=strstr(strlwr(SearchArray1[i].Title),strlwr(temp.Title));
+                        if(strpart!=NULL)
                         {
-                            printf("YES\n");
                             strcpy(SearchArray2[k].ISBN,SearchArray1[i].ISBN);
                             strcpy(SearchArray2[k].Title,SearchArray1[i].Title);
                             strcpy(SearchArray2[k].Category,SearchArray1[i].Category);
                             strcpy(SearchArray2[k].AuthorName,SearchArray1[i].AuthorName);
                             k++;
                         }
-                        else
-                            printf("NO!");
                     }
 
                 }else{
-                    for(i=0;i<100;i++)
+                    for(i=0;i<j;i++)
                     {
                         strcpy(SearchArray2[i].ISBN,SearchArray1[i].ISBN);
                         strcpy(SearchArray2[i].Title,SearchArray1[i].Title);
@@ -814,14 +809,15 @@ void SearchBook()
                         k++;
                     }
                 }
+                printf("k=%d\n",k);
                 for(i=0;i<5;i++)
                 printf("%s \t %s \t %s \t %s\n",SearchArray2[i].Title,SearchArray2[i].AuthorName,SearchArray2[i].ISBN,SearchArray2[i].Category);
                 if(temp.AuthorName[0]!=NULL)
                 {
-                        for(i=0;i<=k;i++)
+                    for(i=0;i<k;i++)
                     {
-                        strequal=strcmpi(SearchArray2[i].AuthorName,temp.AuthorName);
-                        if(strequal==0)
+                        strpart=strstr(strlwr(SearchArray2[i].AuthorName),strlwr(temp.AuthorName));
+                        if(strpart!=NULL)
                         {
                             strcpy(SearchArray3[l].ISBN,SearchArray2[i].ISBN);
                             strcpy(SearchArray3[l].Title,SearchArray2[i].Title);
@@ -831,8 +827,9 @@ void SearchBook()
                             l++;
                         }
                     }
-                }else{
-                    for(i=0;i<100;i++)
+                }else
+                {
+                    for(i=0;i<k;i++)
                     {
                         strcpy(SearchArray3[i].ISBN,SearchArray2[i].ISBN);
                         strcpy(SearchArray3[i].Title,SearchArray2[i].Title);
@@ -841,18 +838,19 @@ void SearchBook()
                         l++;
                     }
                 }
+                printf("l=%d\n",l);
                 if(temp.AuthorName[0]==NULL && temp.Category[0]==NULL && temp.Title[0]==NULL)
                     printf("\nNo matches found. Please check your spelling or try a different search term!\n");
                 else{
-                        printf("Search Results: \n");
+                        printf("\nSearch Results: \n");
                         if(SearchArray3[0].Title[0]==NULL)
                             printf("\nNo matches found. Please check your spelling or try a different search term!\n");
                         else
                         {
                             printf("Book Title \t\t Author Name \t ISBN \t\t\t Category \n");
-                            for(i=0;i<=l;i++)
+                            for(i=0;i<l;i++)
                             {
-                                printf("%s \t %s \t %s \t %s\n",SearchArray3[i].Title,SearchArray3[i].AuthorName,SearchArray3[i].ISBN,SearchArray3[i].Category);
+                                printf("%s. \t %s. \t %s. \t %s.\n",SearchArray3[i].Title,SearchArray3[i].AuthorName,SearchArray3[i].ISBN,SearchArray3[i].Category);
                             }
                         }
                 }
