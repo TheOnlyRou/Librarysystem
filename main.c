@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <windows.h>
-#include <strings.h>
+#include <string.h>
 #include <conio.h>
 
 /*
@@ -86,6 +86,51 @@ Date today;
 
 void MainMenu();
 void BookManagement();
+
+int CheckEmail(char *mail)
+{
+    int found=0,i,charcount=0,midcount=0,last=0,refused=0;
+    for(i=0;i<=strlen(mail);i++)
+    {
+        if(mail[i]==')' || mail[i]=='(' || mail[i]==','|| mail[i]=='\'' || mail[i]==';' || mail[i]==':' || mail[i]==')' || mail[i]==' ' || mail[i]=='/' || mail[i]=='\\' || mail[i]=='[' || mail[i]==']' || mail[i]=='{' || mail[i]=='}' || mail[strlen(mail) - 1]=='.' )
+            refused++;
+    }
+    if(refused!=0)
+    {
+        return 0;
+    }
+    else{
+            for(i=0;i<=strlen(mail);i++)
+            {
+                if(mail[i]=='@')
+                    {
+                        found++;
+                        break;
+                    }
+                else if(isalpha(mail[i]) || isdigit(mail[i]))
+                    charcount++;
+            }
+            for(i=charcount;i<=strlen(mail);i++)
+            {
+                if(mail[i]=='.')
+                {
+                    found++;
+                    break;
+                }
+                else if(isalpha(mail[i]) || isdigit(mail[i]))
+                    midcount++;
+            }
+            for(i=charcount+midcount;i<strlen(mail);i++)
+            {
+                if(isalpha(mail[i]) || isdigit(mail[i]))
+                last++;
+            }
+            if(found!=2 || charcount==0 || midcount==0 || last==0)
+                return 0;
+            else
+                return 1;
+        }
+}
 
 int CheckInt(int n)
 {
@@ -458,54 +503,60 @@ void NewMember()
     Member temp;
     int i=0;
     int checkid=1;
-    printf("Please enter the surname:");
+    printf("Please enter the surname:\n");
     fgetc(stdin);
     fgets(temp.Surname,sizeof(temp.Surname),stdin);
     temp.Surname[strlen(temp.Surname) - 1] = 0;
-    printf("\nPlease enter the last name:");
+    printf("Please enter the last name:\n");
     fgets(temp.LastName,sizeof(temp.LastName),stdin);
     temp.LastName[strlen(temp.LastName) - 1] = 0;
-    printf("\nPlease enter the Email:");
-    fgets(temp.mail,sizeof(temp.mail),stdin);
-    temp.mail[strlen(temp.mail) - 1] = 0;
     do{
-    printf("\nEnter the member ID:");
-    scanf("%d",&temp.ID);
-    if(CheckID(temp.ID)==0)
-        printf("\nPlease enter a legitimate ID! ID numbers start from 1001 and end at 9999.\n");
-    for(i=0;i<LastMember;i++)
-    {
-        if(temp.ID==MembersArray[i].ID)
+        printf("Please enter the Email:(ex: example@mail.com)\n");
+
+        fgets(temp.mail,sizeof(temp.mail),stdin);
+        temp.mail[strlen(temp.mail) - 1] = 0;
+        if(CheckEmail(temp.mail)==0)
+            printf("Please enter a valid Email (ex: example@mail.com)\n");
+        }while(CheckEmail(temp.mail)==0);
+    do{
+        checkid=1;
+        printf("Enter the member ID:\n");
+        scanf("%d",&temp.ID);
+        if(CheckID(temp.ID)==0)
+            printf("\nPlease enter a legitimate ID! ID numbers start from 1001 and end at 9999.\n");
+        for(i=0;i<LastMember;i++)
         {
-            checkid=0;
-            printf("This member is already registered in the system!\n");
-        }
+            if(temp.ID==MembersArray[i].ID)
+            {
+                checkid=0;
+                printf("This member is already registered in the system!\n");
+            }
     }}while(checkid==0 || CheckID(temp.ID)==0);
-    printf("\nPlease enter the member's city of residence:");
+    printf("Please enter the member's city of residence:\n");
     fgetc(stdin);
     fgets(temp.Address.city,sizeof(temp.Address.city),stdin);
     temp.Address.city[strlen(temp.Address.city) - 1] = 0;
-    printf("\nPlease enter the member house's street:");
+    printf("Please enter the member house's street:\n");
     fgets(temp.Address.street,sizeof(temp.Address.street),stdin);
     temp.Address.street[strlen(temp.Address.street) - 1] = 0;
-    printf("\nPlease enter the member house's building number:");
+    printf("Please enter the member house's building number:\n");
     do{
-    scanf("%d",&temp.Address.bldg);
+        scanf("%d",&temp.Address.bldg);
         if(CheckInt(temp.Address.bldg)==0)
-    printf("\nPlease enter an integer!");
+            printf("Please enter an integer!\n");
     }while(CheckInt(temp.Address.bldg)==0);
     do{
-    printf("\nEnter the member's age");
-    scanf("%d",&temp.Age);
-    if(CheckInt(temp.Age)==0)
-        printf("\nPlease enter an integer!");
+        printf("Enter the member's age:\n");
+        scanf("%d",&temp.Age);
+        if(CheckInt(temp.Age)==0)
+            printf("Please enter an integer!\n");
     }while(CheckInt(temp.Age)==0);
     do{
-    printf("\nEnter the member's phone number");
-    scanf("%ld",&temp.PhoneNumber);
-    if(CheckInt(temp.PhoneNumber)==0)
-        printf("\nPlease enter an integer!");
-    }while(CheckInt(temp.Age)==0);
+        printf("Enter the member's phone number:\n");
+        scanf("%ld",&temp.PhoneNumber);
+        if(CheckPhone(temp.PhoneNumber)==0)
+            printf("Please enter a valid phone number!\n");
+    }while(CheckPhone(temp.PhoneNumber)==0);
     printf("\nMember added successfully!");
 
     MembersArray[LastMember-1].ID=temp.ID;
@@ -713,7 +764,7 @@ void SearchBook()
     do{
         scanf("%d",&input8);
         if(input8>3 || input8<1 || CheckInt(input8)==0)
-        printf("Please enter an integer (1-2)!\n");
+        printf("Please enter an integer (1-3)!\n");
         else{
         switch(input8)
         {
@@ -760,8 +811,8 @@ void SearchBook()
                 {
                     for(i=0;i<LastBook;i++)
                     {
-                        strpart=strstr(strlwr(temp.Category),strlwr(BooksArray[i].Category));
-                        if(strpart!=NULL)
+                        strpart=strcmpi(temp.Category,BooksArray[i].Category);
+                        if(strpart==0)
                         {
                             strcpy(SearchArray1[j].ISBN,BooksArray[i].ISBN);
                             strcpy(SearchArray1[j].Title,BooksArray[i].Title);
@@ -780,10 +831,7 @@ void SearchBook()
                         j++;
                     }
                 }
-                printf("j=%d\n",j);
-                for(i=0;i<5;i++)
-                printf("%s. \t %s. \t %s. \t %s.\n",SearchArray1[i].Title,SearchArray1[i].AuthorName,SearchArray1[i].ISBN,SearchArray1[i].Category);
-                printf("\n");
+                for(i=0;i<j;i++)
                 if(temp.Title[0]!=NULL)
                 {
                     for(i=0;i<j;i++)
@@ -809,9 +857,6 @@ void SearchBook()
                         k++;
                     }
                 }
-                printf("k=%d\n",k);
-                for(i=0;i<5;i++)
-                printf("%s \t %s \t %s \t %s\n",SearchArray2[i].Title,SearchArray2[i].AuthorName,SearchArray2[i].ISBN,SearchArray2[i].Category);
                 if(temp.AuthorName[0]!=NULL)
                 {
                     for(i=0;i<k;i++)
@@ -838,7 +883,6 @@ void SearchBook()
                         l++;
                     }
                 }
-                printf("l=%d\n",l);
                 if(temp.AuthorName[0]==NULL && temp.Category[0]==NULL && temp.Title[0]==NULL)
                     printf("\nNo matches found. Please check your spelling or try a different search term!\n");
                 else{
@@ -850,7 +894,7 @@ void SearchBook()
                             printf("Book Title \t\t Author Name \t ISBN \t\t\t Category \n");
                             for(i=0;i<l;i++)
                             {
-                                printf("%s. \t %s. \t %s. \t %s.\n",SearchArray3[i].Title,SearchArray3[i].AuthorName,SearchArray3[i].ISBN,SearchArray3[i].Category);
+                                printf("%s \t %s \t %s \t %s\n",SearchArray3[i].Title,SearchArray3[i].AuthorName,SearchArray3[i].ISBN,SearchArray3[i].Category);
                             }
                         }
                 }
