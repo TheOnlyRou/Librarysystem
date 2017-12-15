@@ -1,0 +1,5 @@
+29,10,2009,978-3-16-148410-0,C How to Program,Paul Deitel, Pearson Education. Inc,Programming,5,3
+12,12,2017,974-3-14-148432-0,De Gea saved my GPA, Mohamed Agwa, Agwa. Inc,Engineering,100,3
+12,12,2017,965-3-16-784650-0,I hope this works,Maro Mokhles,LeRou. Inc,Coding,100,3
+12,12,2017,988-3-29-123674-0,Arsenal actually won,Youssef Alaa, TheJoe. Inc,Sports,100,3
+23,11,2012,967-4-23-176296-0,How to be serious?,Maro Mokhles,LeRou.Inc,Life,50,50
