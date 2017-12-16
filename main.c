@@ -433,10 +433,10 @@ void ReturnBorrow()
 void DisplayMembers()
 {
     int i=0;
-    printf("\t Surname \t Last Name \t ID \t Email \n");
+    printf("\t Surname \t   Last Name \t Age \t ID \t Phone Number \t Address \t Email \n");
     for(i=0;i<LastMember-1;i++)
     {
-        printf(" %d \t %s \t %s \t\t %d \t %s \n",i+1,MembersArray[i].Surname,MembersArray[i].LastName,MembersArray[i].ID,MembersArray[i].mail);
+        printf(" %d \t %s  %15s \t %d \t %d \t %ld \t %d,%s,%s \t %30s \n",i+1,MembersArray[i].Surname,MembersArray[i].LastName,MembersArray[i].Age,MembersArray[i].ID,MembersArray[i].PhoneNumber,MembersArray[i].Address.bldg,MembersArray[i].Address.street,MembersArray[i].Address.city,MembersArray[i].mail);
     }
     printf("\n\n");
     printf("Press Any Key to Continue\n");
@@ -447,10 +447,14 @@ void DisplayBorrowings()
 {
 
 int i=0;
-    printf("Transaction \t ISBN \t\t Borrower ID \t Issued Date \t Due Date\n");
+    printf("Transaction \t ISBN \t\t Borrower ID \t Issued Date \t Due Date \t Return Date\n");
     for(i=0;i<LastBorrow-1;i++)
     {
-        printf("%d      \t %s \t %d \t\t %d/%d/%d \t %d/%d/%d\n",BorrowsArray[i].Transaction,BorrowsArray[i].ISBN,BorrowsArray[i].ID,BorrowsArray[i].Dateissued.Day,BorrowsArray[i].Dateissued.Month,BorrowsArray[i].Dateissued.Year,BorrowsArray[i].Datedue.Day,BorrowsArray[i].Datedue.Month,BorrowsArray[i].Datedue.Year);
+        printf("%d      \t %s \t %d \t\t %d/%d/%d \t %d/%d/%d \t",BorrowsArray[i].Transaction,BorrowsArray[i].ISBN,BorrowsArray[i].ID,BorrowsArray[i].Dateissued.Day,BorrowsArray[i].Dateissued.Month,BorrowsArray[i].Dateissued.Year,BorrowsArray[i].Datedue.Day,BorrowsArray[i].Datedue.Month,BorrowsArray[i].Datedue.Year);
+        if(BorrowsArray[i].return_date.Day==0)
+            printf("Not yet returned\n");
+        else
+            printf("%d/%d/%d\n",BorrowsArray[i].return_date.Day,BorrowsArray[i].return_date.Month,BorrowsArray[i].return_date.Year);
     }
     printf("\n\n");
     printf("Press Any Key to Continue\n");
@@ -733,10 +737,10 @@ void DisplayBooks()
 {
     system("cls");
     int i=0;
-    printf("    Book Title \t\t Author Name \t ISBN \t\t\t Category \n");
+    printf("   Book Title\t\tAuthor Name \t\t ISBN \t\t\t Category \t\t Publisher\t\tPublication date \t Copies registered \t Copies Available \n\n");
     for(i=0;i<LastBook-1;i++)
     {
-        printf("%d %s \t %s \t %s \t %s \n",i+1,BooksArray[i].Title,BooksArray[i].AuthorName,BooksArray[i].ISBN,BooksArray[i].Category);
+        printf("%d %s \t %s \t %s \t %15s \t %30s \t %d/%d/%d \t\t %d \t\t %d \n",i+1,BooksArray[i].Title,BooksArray[i].AuthorName,BooksArray[i].ISBN,BooksArray[i].Category,BooksArray[i].Publisher,BooksArray[i].Publication.Day,BooksArray[i].Publication.Month,BooksArray[i].Publication.Year,BooksArray[i].copies,BooksArray[i].copies_available);
     }
     printf("\n");
     printf("\n\n");
