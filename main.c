@@ -752,7 +752,7 @@ void SearchBook()
 {
     system("cls");
     int i,j=0,k=0,l=0,found=0;
-    char *strpart;
+    char *strpart,Auth[70],Title[70];
     Book temp;
     Book SearchArray1[100], SearchArray2[100], SearchArray3[100];
     for(i=0;i>100;i++)
@@ -840,7 +840,8 @@ void SearchBook()
                 {
                     for(i=0;i<j;i++)
                     {
-                        strpart=strstr(strlwr(SearchArray1[i].Title),strlwr(temp.Title));
+                        strcpy(Title,SearchArray1[i].Title);
+                        strpart=strstr(strlwr(Title),strlwr(temp.Title));
                         if(strpart!=NULL)
                         {
                             strcpy(SearchArray2[k].ISBN,SearchArray1[i].ISBN);
@@ -865,7 +866,8 @@ void SearchBook()
                 {
                     for(i=0;i<k;i++)
                     {
-                        strpart=strstr(strlwr(SearchArray2[i].AuthorName),strlwr(temp.AuthorName));
+                        strcpy(Auth,SearchArray1[i].AuthorName);
+                        strpart=strstr(strlwr(Auth),strlwr(temp.AuthorName));
                         if(strpart!=NULL)
                         {
                             strcpy(SearchArray3[l].ISBN,SearchArray2[i].ISBN);
