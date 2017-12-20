@@ -146,7 +146,7 @@ int CheckDate(Date n)
     return 0;
 	else if(n.Day>31 || n.Day<0 || CheckInt(n.Day)==0)
 	return 0;
-	else if(n.Year>DateTime.wYear || CheckInt(n.Year)==0)
+	else if(n.Year>3000 || CheckInt(n.Year)==0)
 	return 0;
 	else
         return 1;
@@ -282,19 +282,23 @@ void NewBorrow()
     int checkid,checkdate,i=0,found=0,flag=0;
     int found1=0;
     Borrow temp;
-    printf("Please enter the ID of the borrowing member:\n");
-    scanf("%d",&temp.ID);
-    checkid=CheckID(temp.ID);
-    if(checkid==0)
-        printf("Please enter a legitimate ID! ID numbers start from 1001 and end at 9999.\n");
-    for(i=0;(found==0);i++)
-    {
-        if(MembersArray[i].ID==temp.ID)
-            found=1;
-    }
-    if(found==0)
-        printf("This member ID isn't registered in the system!\n");
-    else
+    do{
+        printf("Please enter the ID of the borrowing member:\n");
+        do{
+            scanf("%d",&temp.ID);
+            checkid=CheckID(temp.ID);
+            if(checkid==0)
+                printf("Please enter a legitimate ID! ID numbers start from 1001 and end at 9999.\n");
+        }while(checkid==0);
+        for(i=0;(found==0)&&(i<LastMember-1) ;i++)
+        {
+            if(MembersArray[i].ID==temp.ID)
+                found=1;
+        }
+        if(found==0)
+            printf("This member ID isn't registered in the system!\n");
+    }while(found==0);
+    if(found!=0 && checkid!=0)
     {
         for(i=0;i<LastBorrow;i++)
         {
@@ -347,37 +351,31 @@ void NewBorrow()
         else
         {
             BorrowsArray[LastBorrow-1].Transaction=BorrowsArray[LastBorrow-2].Transaction+1;
-            do{
-                printf("Please enter Date issued. (DD enter MM enter YY enter) \n");
-                scanf("%d %d %d",&temp.Dateissued.Day,&temp.Dateissued.Month,&temp.Dateissued.Year);
-                checkdate=CheckDate(temp.Dateissued);
-                if(checkdate==0)
-                    printf("Please enter a date that is not later than today! \n");
-        }while(checkdate==0);
-            do{
+        do{
+                checkdate=1;
                 printf("Please enter Date due to return. (DD enter MM enter YY enter) \n");
                 scanf("%d %d %d",&temp.Datedue.Day,&temp.Datedue.Month,&temp.Datedue.Year);
-        if(temp.Dateissued.Year>temp.Datedue.Year)
-        {
-            printf("Date issued entered can't be after Date due's date!\n");
-            checkdate=0;
-        }
-        else if((temp.Dateissued.Year=temp.Datedue.Year) && (temp.Dateissued.Month>temp.Datedue.Month))
-        {
-            printf("Date issued entered can't be after Date due's date!\n");
-            checkdate=0;
-        }
-        else if((temp.Dateissued.Year=temp.Datedue.Year) && (temp.Dateissued.Month=temp.Datedue.Month) && (temp.Dateissued.Day>temp.Datedue.Day))
-        {
-            printf("Date issued entered can't be after Date due's date!\n");
-            checkdate=0;
-        }
+                if(DateTime.wYear>temp.Datedue.Year)
+                {
+                    printf("Date due can't be before today's date!\n");
+                    checkdate=0;
+                }
+                else if((DateTime.wYear==temp.Datedue.Year) && (DateTime.wMonth>temp.Datedue.Month))
+                {
+                    printf("Date due can't be before today's date!\n");
+                    checkdate=0;
+                }
+                else if((DateTime.wYear==temp.Datedue.Year) && (DateTime.wMonth==temp.Datedue.Month) && (DateTime.wDay>temp.Datedue.Day))
+                {
+                    printf("Date due can't be before today's date!\n");
+                    checkdate=0;
+                }
         }while(checkdate==0);
         }}}
         BorrowsArray[LastBorrow-1].ID=temp.ID;
-        BorrowsArray[LastBorrow-1].Dateissued.Day=temp.Dateissued.Day;
-        BorrowsArray[LastBorrow-1].Dateissued.Month=temp.Dateissued.Month;
-        BorrowsArray[LastBorrow-1].Dateissued.Year=temp.Dateissued.Year;
+        BorrowsArray[LastBorrow-1].Dateissued.Day=DateTime.wDay;
+        BorrowsArray[LastBorrow-1].Dateissued.Month=DateTime.wMonth;
+        BorrowsArray[LastBorrow-1].Dateissued.Year=DateTime.wYear;
         BorrowsArray[LastBorrow-1].Datedue.Day=temp.Datedue.Day;
         BorrowsArray[LastBorrow-1].Datedue.Month=temp.Datedue.Month;
         BorrowsArray[LastBorrow-1].Datedue.Year=temp.Datedue.Year;
