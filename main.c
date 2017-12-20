@@ -304,7 +304,8 @@ void NewBorrow()
         if(flag==3)
         {
             printf("This member can't borrow any more books as they have 3 unreturned books!\n");
-            printf("returning to main menu ... \n");
+            printf("Press Any Key to Continue\n");
+            getch();
             MainMenu();
         }
         else{
@@ -330,42 +331,47 @@ void NewBorrow()
                 }
             }
         }
+        for(i=0;i<99;i++)
+        {
+            if(strcmp(BooksArray[i].ISBN,temp.ISBN)==0)
+                {found=1;
+                printf("Book wanted is: %s by %s\n",BooksArray[i].Title,BooksArray[i].AuthorName);
+                flag=i;
+                break;
+                }
+        }
         if(found1==0)
             printf("This book ISBN isn't registered in the system!\n");
         else
         {
             BorrowsArray[LastBorrow-1].Transaction=BorrowsArray[LastBorrow-2].Transaction+1;
             do{
-                printf("Please enter Date issued. (DD, enter, MM, enter, YY, enter) \n");
+                printf("Please enter Date issued. (DD enter MM enter YY enter) \n");
                 scanf("%d %d %d",&temp.Dateissued.Day,&temp.Dateissued.Month,&temp.Dateissued.Year);
                 checkdate=CheckDate(temp.Dateissued);
                 if(checkdate==0)
                     printf("Please enter a date that is not later than today! \n");
         }while(checkdate==0);
             do{
-                printf("Please enter Date due to return. (DD, enter, MM, enter, YY, enter) \n");
+                printf("Please enter Date due to return. (DD enter MM enter YY enter) \n");
                 scanf("%d %d %d",&temp.Datedue.Day,&temp.Datedue.Month,&temp.Datedue.Year);
-                checkdate=CheckDate(temp.Dateissued);
-                if(checkdate==0)
-                    printf("Please enter a date that is not later than today!\n");
         if(temp.Dateissued.Year>temp.Datedue.Year)
         {
-            printf("Date entered can't be after today's date!\n");
+            printf("Date issued entered can't be after Date due's date!\n");
             checkdate=0;
         }
         else if((temp.Dateissued.Year=temp.Datedue.Year) && (temp.Dateissued.Month>temp.Datedue.Month))
         {
-            printf("Date entered can't be after today's date!");
+            printf("Date issued entered can't be after Date due's date!\n");
             checkdate=0;
         }
-        else if((temp.Dateissued.Year=temp.Datedue.Year) && (temp.Dateissued.Month<=temp.Datedue.Month) && (temp.Dateissued.Day>temp.Datedue.Day))
+        else if((temp.Dateissued.Year=temp.Datedue.Year) && (temp.Dateissued.Month=temp.Datedue.Month) && (temp.Dateissued.Day>temp.Datedue.Day))
         {
-            printf("Date entered can't be after today's date!");
+            printf("Date issued entered can't be after Date due's date!\n");
             checkdate=0;
         }
         }while(checkdate==0);
         }}}
-        BorrowsArray[LastBorrow-1].Transaction=LastTrans-1;
         BorrowsArray[LastBorrow-1].ID=temp.ID;
         BorrowsArray[LastBorrow-1].Dateissued.Day=temp.Dateissued.Day;
         BorrowsArray[LastBorrow-1].Dateissued.Month=temp.Dateissued.Month;
@@ -378,6 +384,7 @@ void NewBorrow()
         BorrowsArray[LastBorrow-1].return_date.Year=0;
         strcpy(BorrowsArray[LastBorrow-1].ISBN,temp.ISBN);
         LastBorrow++;
+        LastTrans++;
         printf("Borrow transaction added successfully!");
         printf("\nPress Any Key to Continue\n");
         getch();
@@ -702,7 +709,7 @@ void NewBook()
     fgets(temp.Publisher,sizeof(temp.Publisher),stdin);
     temp.Publisher[strlen(temp.Publisher) - 1] = 0;
     do{
-    printf("\nPlease enter Date Published:(DD, enter MM enter YYYY enter)\n");
+    printf("\nPlease enter Date Published:(DD enter MM enter YYYY enter)\n");
     scanf("%d %d %d",&temp.Publication.Day,&temp.Publication.Month,&temp.Publication.Year);
     checkdate=CheckDate(temp.Publication);
     if(checkdate==0)
@@ -1098,7 +1105,6 @@ void AdminActions()
 
 void MainMenu()
 {
-    PopBooks();
     system("cls");
         printf("Date: %d/%d/%d ",DateTime.wDay,DateTime.wMonth,DateTime.wYear);
     if((DateTime.wHour+2)<12)
@@ -1238,6 +1244,7 @@ int main()
          fclose(k);
     } else
         printf("Error opening the file!\n");
+    PopBooks();
     MainMenu();
     return 0;
 }
