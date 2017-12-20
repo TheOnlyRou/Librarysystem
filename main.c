@@ -163,7 +163,7 @@ int CheckPhone(int n)
 int CheckISBN(char *n)
 {
     int i=0,digcount=0;
-    for(i=0;i<n[i]!=0;i++)
+    for(i=0;n[i]!=0;i++)
     {
         if(n[i]>47 && n[i]<58)
             {
@@ -309,37 +309,39 @@ void NewBorrow()
             MainMenu();
         }
         else{
-        printf("Please enter the ISBN of the book to be borrowed:\n");
-        fgetc(stdin);
-        fgets(temp.ISBN,sizeof(temp.ISBN),stdin);
-        temp.ISBN[strlen(temp.ISBN) - 1] = 0;
-        if(CheckISBN(temp.ISBN)==0)
-            printf("Please enter a legitimate ISBN!(ex: 978-3-16-148410-0)\n");
-        for(i=0;(found1==0);i++)
-        {
-            if(strcmp(BooksArray[i].ISBN,temp.ISBN)==0)
+            do{
+            printf("Please enter the ISBN of the book to be borrowed:(ex: 978-3-16-148410-0)\n");
+            fflush(stdin);
+            fgets(temp.ISBN,sizeof(temp.ISBN),stdin);
+            temp.ISBN[strlen(temp.ISBN) - 1] = 0;
+            if(CheckISBN(temp.ISBN)==0)
+                printf("Please enter a legitimate ISBN!(ex: 978-3-16-148410-0)\n");
+            }while(CheckISBN(temp.ISBN)==0);
+            for(i=0;(found1==0);i++)
             {
-                found1=1;
-                if(BooksArray[i].copies_available>0)
-                BooksArray[i].copies_available--;
-                else
+                if(strcmp(BooksArray[i].ISBN,temp.ISBN)==0)
                 {
-                    printf("There are no more copies available.\n");
-                    printf("\nPress Any Key to Continue\n");
-                    getch();
-                    MainMenu();
+                    found1=1;
+                    if(BooksArray[i].copies_available>0)
+                    BooksArray[i].copies_available--;
+                    else
+                    {
+                        printf("There are no more copies available.\n");
+                        printf("\nPress Any Key to Continue\n");
+                        getch();
+                        MainMenu();
+                    }
                 }
             }
-        }
-        for(i=0;i<99;i++)
-        {
-            if(strcmp(BooksArray[i].ISBN,temp.ISBN)==0)
-                {found=1;
-                printf("Book wanted is: %s by %s\n",BooksArray[i].Title,BooksArray[i].AuthorName);
-                flag=i;
-                break;
-                }
-        }
+            for(i=0;i<99;i++)
+            {
+                if(strcmp(BooksArray[i].ISBN,temp.ISBN)==0)
+                    {found=1;
+                    printf("Book wanted is: %s by %s\n",BooksArray[i].Title,BooksArray[i].AuthorName);
+                    flag=i;
+                    break;
+                    }
+            }
         if(found1==0)
             printf("This book ISBN isn't registered in the system!\n");
         else
