@@ -186,7 +186,7 @@ int CheckID(int n)
 void OverdueBooks()
 {
     int i=0;
-    printf("Transaction \t ID \t ISBN \t Date due\n");
+    printf("Transaction \t ID \t ISBN \t\t\t Date due\n");
     for(i=0;i<LastBorrow-1;i++)
     {
         if(BorrowsArray[i].return_date.Day==0)
@@ -199,11 +199,11 @@ void OverdueBooks()
             {
                 if(BorrowsArray[i].Datedue.Month<DateTime.wMonth)
                 {
-                    printf("%d \t %d \t %s \t %d/%d/%d\n",BorrowsArray[i].Transaction, BorrowsArray[i].ID,BorrowsArray[i].ISBN, BorrowsArray[i].Datedue.Day,BorrowsArray[i].Datedue.Month,BorrowsArray[i].Datedue.Year);
+                    printf("%d \t\t %d \t %s \t %d/%d/%d\n",BorrowsArray[i].Transaction, BorrowsArray[i].ID,BorrowsArray[i].ISBN, BorrowsArray[i].Datedue.Day,BorrowsArray[i].Datedue.Month,BorrowsArray[i].Datedue.Year);
                 }
                 else if(BorrowsArray[i].Datedue.Day<DateTime.wDay)
                 {
-                    printf("%d \t %d \t %s \t %d/%d/%d\n",BorrowsArray[i].Transaction, BorrowsArray[i].ID,BorrowsArray[i].ISBN, BorrowsArray[i].Datedue.Day,BorrowsArray[i].Datedue.Month,BorrowsArray[i].Datedue.Year);
+                    printf("%d \t\t %d \t %s \t %d/%d/%d\n",BorrowsArray[i].Transaction, BorrowsArray[i].ID,BorrowsArray[i].ISBN, BorrowsArray[i].Datedue.Day,BorrowsArray[i].Datedue.Month,BorrowsArray[i].Datedue.Year);
                 }
             }
         }
@@ -392,16 +392,15 @@ void NewBorrow()
 
 void ReturnBorrow()
 {
-    Date temp;
     int Trans,i=0,found=0,checkdate=1,found1=0;
     char ISBN[20];
     printf("Books that are yet to be returned:\n");
-    printf("Transaction \t ID \t ISBN \t Date due\n");
+    printf("Transaction \t ID \t ISBN \t\t\t Date due\n");
     for(i=0;i<LastBorrow-1;i++)
     {
         if(BorrowsArray[i].return_date.Day==0)
         {
-           printf("%d \t\t %d \t %s \t %d/%d/%d\n",BorrowsArray[i].Transaction, BorrowsArray[i].ID,BorrowsArray[i].ISBN, BorrowsArray[i].Datedue.Day,BorrowsArray[i].Datedue.Month,BorrowsArray[i].Datedue.Year);
+           printf("%2d \t\t %d \t %s \t %d/%d/%d\n",BorrowsArray[i].Transaction, BorrowsArray[i].ID,BorrowsArray[i].ISBN, BorrowsArray[i].Datedue.Day,BorrowsArray[i].Datedue.Month,BorrowsArray[i].Datedue.Year);
         }
     }
     printf("Please enter Transaction number:\n");
@@ -418,31 +417,24 @@ void ReturnBorrow()
             strcpy(ISBN,BorrowsArray[i].ISBN);
             break;
         }
-        i++;
     }
     if(found==0)
         printf("This transaction number is not registered or already returned!");
     else{
-    do{
-        printf("Please enter Date of return. (DD, enter, MM, enter, YY, enter) \n");
-        scanf("%d %d %d",&temp.Day,&temp.Month,&temp.Year);
-        checkdate=CheckDate(temp);
-        if(checkdate==0)
-            printf("Please enter a date that is not later than today! \n");
-        }while(checkdate==0);
-    BorrowsArray[i].return_date.Day=temp.Day;
-    BorrowsArray[i].return_date.Month=temp.Month;
-    BorrowsArray[i].return_date.Year=temp.Year;
-    for(i=0;(found1==0);i++)
-    {
-        if(strcmp(BooksArray[i].ISBN,ISBN)==0)
+
+        BorrowsArray[i].return_date.Day=DateTime.wDay;
+        BorrowsArray[i].return_date.Month=DateTime.wMonth;
+        BorrowsArray[i].return_date.Year=DateTime.wYear;
+        for(i=0;(found1==0);i++)
         {
-            found1=1;
-            BooksArray[i].copies_available++;
+            if(strcmp(BooksArray[i].ISBN,ISBN)==0)
+            {
+                found1=1;
+                BooksArray[i].copies_available++;
+            }
         }
-    }
-    printf("Book's return was registered successfully!\n");
-    }
+        printf("Book's return was registered successfully!\n");
+        }
     printf("\n\n");
     printf("Press Any Key to Continue\n");
     getch();
@@ -451,10 +443,10 @@ void ReturnBorrow()
 void DisplayMembers()
 {
     int i=0;
-    printf("\t Surname \t   Last Name \t Age \t ID \t Phone Number \t Address \t Email \n");
+    printf("\t Surname \t  Last Name \t  Age \t ID \t Phone Number \t Email Address \t\t\t Home Address \n");
     for(i=0;i<LastMember-1;i++)
     {
-        printf(" %d \t %s  %15s \t %d \t %d \t %ld \t %d,%s,%s \t %30s \n",i+1,MembersArray[i].Surname,MembersArray[i].LastName,MembersArray[i].Age,MembersArray[i].ID,MembersArray[i].PhoneNumber,MembersArray[i].Address.bldg,MembersArray[i].Address.street,MembersArray[i].Address.city,MembersArray[i].mail);
+        printf(" %d \t %-15s  %-15s  %d \t %d \t %d \t %s \t\t %d,%s,%s \n",i+1,MembersArray[i].Surname,MembersArray[i].LastName,MembersArray[i].Age,MembersArray[i].ID,MembersArray[i].PhoneNumber,MembersArray[i].mail,MembersArray[i].Address.bldg,MembersArray[i].Address.street,MembersArray[i].Address.city);
     }
     printf("\n\n");
     printf("Press Any Key to Continue\n");
@@ -465,10 +457,10 @@ void DisplayBorrowings()
 {
 
 int i=0;
-    printf("Transaction \t ISBN \t\t Borrower ID \t Issued Date \t Due Date \t Return Date\n");
+    printf("Transaction\t ISBN \t\t Borrower ID \t Issued Date \t Due Date \t Return Date\n");
     for(i=0;i<LastBorrow-1;i++)
     {
-        printf("%d      \t %s \t %d \t\t %d/%d/%d \t %d/%d/%d \t",BorrowsArray[i].Transaction,BorrowsArray[i].ISBN,BorrowsArray[i].ID,BorrowsArray[i].Dateissued.Day,BorrowsArray[i].Dateissued.Month,BorrowsArray[i].Dateissued.Year,BorrowsArray[i].Datedue.Day,BorrowsArray[i].Datedue.Month,BorrowsArray[i].Datedue.Year);
+        printf("%2d  \t %20s \t %d \t\t %d/%d/%d \t %d/%d/%d \t",BorrowsArray[i].Transaction,BorrowsArray[i].ISBN,BorrowsArray[i].ID,BorrowsArray[i].Dateissued.Day,BorrowsArray[i].Dateissued.Month,BorrowsArray[i].Dateissued.Year,BorrowsArray[i].Datedue.Day,BorrowsArray[i].Datedue.Month,BorrowsArray[i].Datedue.Year);
         if(BorrowsArray[i].return_date.Day==0)
             printf("Not yet returned\n");
         else
@@ -585,7 +577,7 @@ void NewMember()
             printf("Please enter an integer!\n");
     }while(CheckInt(temp.Age)==0);
     do{
-        printf("Enter the member's phone number:\n");
+        printf("Enter the member's phone number: (ex: 5123867)\n");
         scanf("%ld",&temp.PhoneNumber);
         if(CheckPhone(temp.PhoneNumber)==0)
             printf("Please enter a valid phone number!\n");
@@ -766,10 +758,10 @@ void DisplayBooks()
 {
     system("cls");
     int i=0;
-    printf("   Book Title\t\tAuthor Name \t\t ISBN \t\t\t Category \t\t Publisher\t\tPublication date \t Copies registered \t Copies Available \n\n");
+    printf("   Book Title\t\tAuthor Name \t\t ISBN \t\t\t Category \t\t Publisher \t\t\tPublication date \t Copies registered \t Copies Available \n\n");
     for(i=0;i<LastBook-1;i++)
     {
-        printf("%d %s \t %s \t %s \t %15s \t %30s \t %d/%d/%d \t\t %d \t\t %d \n",i+1,BooksArray[i].Title,BooksArray[i].AuthorName,BooksArray[i].ISBN,BooksArray[i].Category,BooksArray[i].Publisher,BooksArray[i].Publication.Day,BooksArray[i].Publication.Month,BooksArray[i].Publication.Year,BooksArray[i].copies,BooksArray[i].copies_available);
+        printf("%d %-20s \t %-20s \t %-20s \t %-20s %-30s  %d/%d/%d \t\t %d \t\t %d \n",i+1,BooksArray[i].Title,BooksArray[i].AuthorName,BooksArray[i].ISBN,BooksArray[i].Category,BooksArray[i].Publisher,BooksArray[i].Publication.Day,BooksArray[i].Publication.Month,BooksArray[i].Publication.Year,BooksArray[i].copies,BooksArray[i].copies_available);
     }
     printf("\n");
     printf("\n\n");
@@ -942,7 +934,7 @@ void SearchBook()
     }}while(input8>3 || input8<1 || CheckInt(input8)==0);
 }
 
-void Save()
+void Save(int n)
 {
     FILE *a,*b,*c;
     int i=0;
@@ -971,9 +963,8 @@ void Save()
     fclose(c);
     printf("Have no fear! Your data is in the bag!");
     printf("\n\n");
-    printf("Press Any Key to Continue\n");
-    getch();
-    MainMenu();
+    if(n==1)
+        MainMenu();
 }
 
 void BookManagement()
@@ -1042,7 +1033,7 @@ void MemberManagement()
                 MainMenu();
                 break;
 	}}}while(input5>4 || input5<1 || CheckInt(input5)==0);
-    MainMenu();
+	MainMenu();
 }
 
 void BorrowManagement()
@@ -1073,7 +1064,7 @@ void BorrowManagement()
                 MainMenu();
                 break;
 	}}}while(input6>4 || input6<1 || CheckInt(input6)==0);
-    MainMenu();
+	MainMenu();
 }
 
 void AdminActions()
@@ -1146,7 +1137,7 @@ void MainMenu()
             AdminActions(); /* Calls a function that manages administrative actions */
             break;
         case 5:
-            Save();
+            Save(1);
             break;
         case 6:
             printf("Please pick an action(1-3): \n");
@@ -1158,8 +1149,9 @@ void MainMenu()
                 if(input2<1 || input2>3 || CheckInt(input2)==0)
                     printf("Please enter an integer (1-3)!");
                 else
-                if(input2==1){
-                    Save();
+                if(input2==1)
+                {
+                    Save(0);
                     exit(0);
                 }
                 else if(input2==2){
@@ -1169,17 +1161,17 @@ void MainMenu()
                     if(input3!= 'Y' && input3!='N' && input3!= 'y' && input3!='n')
                     printf("Please enter Y or N\n");
                     }while(input3!= 'Y' && input3!='N' && input3!= 'y' && input3!='n');
-                    if(input3=='n' || 'N')
-                    MainMenu();
-                    else if(input3=='y' || 'Y')
-                    exit(0);
+                    if(input3=='n' || input3== 'N')
+                        MainMenu();
+                    else if(input3=='y' || input3== 'Y')
+                        exit(0);
                 }
                 else
                     MainMenu();
 			}while(input2>3 || input2<1 || CheckInt(input2)==0);}
 			break;
     }
-}while(input1<1 || input1>6 || CheckInt(input1)==0);
+    }while(input1<1 || input1>6 || CheckInt(input1)==0);
 }
 
 int main()
@@ -1242,7 +1234,7 @@ int main()
          LastBorrow++;
         }
          fclose(k);
-    } else
+    }else
         printf("Error opening the file!\n");
     PopBooks();
     MainMenu();
