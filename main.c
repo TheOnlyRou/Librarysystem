@@ -79,7 +79,7 @@ Book BooksArray[100];
 Borrow BorrowsArray[100];
 BorrowedBook PopularArray[100];
 
-int c1=0,c2=0,c3=0,LastMember=0,LastBook=0,LastBorrow=0,LastTrans=0,input1,input2,input4,input5,input6, input7,input8;
+int c1=0,c2=0,c3=0,LastMember=0,LastBook=0,LastBorrow=0,LastTrans=0,input1,input2,input4,input5,input6,input7,input8;
 char input3;
 SYSTEMTIME DateTime;
 Date today;
@@ -267,7 +267,7 @@ void PopBooks()
             }
         }
     }
-    printf("\nHOT READS!!\n");
+    printf("HOT READS!!\n");
     printf("Book Title \t\t ISBN \t\t\t #Times Borrowed\n");
     for(i=0;i<Last;i++)
     {
@@ -316,7 +316,7 @@ void NewBorrow()
             printf("Please enter a legitimate ISBN!(ex: 978-3-16-148410-0)\n");
         for(i=0;(found1==0);i++)
         {
-            if(strcmp(BooksArray[i].ISBN,temp.ISBN))
+            if(strcmp(BooksArray[i].ISBN,temp.ISBN)==0)
             {
                 found1=1;
                 if(BooksArray[i].copies_available>0)
@@ -324,7 +324,8 @@ void NewBorrow()
                 else
                 {
                     printf("There are no more copies available.\n");
-                    printf("returning to main menu ... \n");
+                    printf("\nPress Any Key to Continue\n");
+                    getch();
                     MainMenu();
                 }
             }
@@ -333,7 +334,7 @@ void NewBorrow()
             printf("This book ISBN isn't registered in the system!\n");
         else
         {
-            BorrowsArray[LastBorrow+1].Transaction=BorrowsArray[LastBorrow].Transaction+1;
+            BorrowsArray[LastBorrow-1].Transaction=BorrowsArray[LastBorrow-2].Transaction+1;
             do{
                 printf("Please enter Date issued. (DD, enter, MM, enter, YY, enter) \n");
                 scanf("%d %d %d",&temp.Dateissued.Day,&temp.Dateissued.Month,&temp.Dateissued.Year);
@@ -378,14 +379,15 @@ void NewBorrow()
         strcpy(BorrowsArray[LastBorrow-1].ISBN,temp.ISBN);
         LastBorrow++;
         printf("Borrow transaction added successfully!");
-        printf("Press Any Key to Continue\n");
+        printf("\nPress Any Key to Continue\n");
         getch();
 }
 
 void ReturnBorrow()
 {
     Date temp;
-    int Trans,i=0,found=0,checkdate=1;
+    int Trans,i=0,found=0,checkdate=1,found1=0;
+    char ISBN[20];
     printf("Books that are yet to be returned:\n");
     printf("Transaction \t ID \t ISBN \t Date due\n");
     for(i=0;i<LastBorrow-1;i++)
@@ -406,12 +408,13 @@ void ReturnBorrow()
         if(BorrowsArray[i].Transaction==Trans)
         {
             found=1;
+            strcpy(ISBN,BorrowsArray[i].ISBN);
             break;
         }
         i++;
     }
     if(found==0)
-        printf("This transaction number is not registered!");
+        printf("This transaction number is not registered or already returned!");
     else{
     do{
         printf("Please enter Date of return. (DD, enter, MM, enter, YY, enter) \n");
@@ -423,6 +426,14 @@ void ReturnBorrow()
     BorrowsArray[i].return_date.Day=temp.Day;
     BorrowsArray[i].return_date.Month=temp.Month;
     BorrowsArray[i].return_date.Year=temp.Year;
+    for(i=0;(found1==0);i++)
+    {
+        if(strcmp(BooksArray[i].ISBN,ISBN)==0)
+        {
+            found1=1;
+            BooksArray[i].copies_available++;
+        }
+    }
     printf("Book's return was registered successfully!\n");
     }
     printf("\n\n");
@@ -464,36 +475,47 @@ int i=0;
 void DeleteMember()
 {
     system("cls");
-    int id,checkid,i,found=0,flag=0;
+    int id,checkid,i,found=0,flag=0,j,ActiveBorrow=0;
    do { printf("Please enter the ID of the member to be deleted:\n");
     scanf("%d",&id);
     checkid=CheckID(id);
     }while (checkid==0);
     for(i=0;i<100;i++)
     {
-        if(MembersArray[i].ID==id){
-            found=1;
-            flag=i;
-            }}
+        if(MembersArray[i].ID==id)
+            {
+                found=1;
+                flag=i;
+            }
+    }
         if (found==0)
         {printf("This member ID isn't registered in the system!");
         MainMenu();}
         else{
-                while(flag<99)
+                for(j=0;j<LastBorrow;j++)
                 {
-                    MembersArray[flag].ID=MembersArray[flag+1].ID;
-                    MembersArray[flag].Age=MembersArray[flag+1].Age;
-                    MembersArray[flag].PhoneNumber=MembersArray[flag+1].PhoneNumber;
-                    MembersArray[flag].Address.bldg=MembersArray[flag+1].Address.bldg;
-                    strcpy(MembersArray[flag].LastName,MembersArray[flag+1].LastName);
-                    strcpy(MembersArray[flag].Surname,MembersArray[flag+1].Surname);
-                    strcpy(MembersArray[flag].mail,MembersArray[flag+1].mail);
-                    strcpy(MembersArray[flag].Address.city,MembersArray[flag+1].Address.city);
-                    strcpy(MembersArray[flag].Address.street,MembersArray[flag+1].Address.street);
-                    flag++;
+                    if(BorrowsArray[j].ID==id && BorrowsArray[j].return_date.Day==0)
+                        ActiveBorrow=1;
                 }
-                LastMember--;
-                printf("Member data has been deleted successfully!");
+                if(ActiveBorrow==1)
+                    printf("This user has an active borrow and has not returned a book yet! They can't be deleted till then!");
+                else{
+                    while(flag<99)
+                    {
+                        MembersArray[flag].ID=MembersArray[flag+1].ID;
+                        MembersArray[flag].Age=MembersArray[flag+1].Age;
+                        MembersArray[flag].PhoneNumber=MembersArray[flag+1].PhoneNumber;
+                        MembersArray[flag].Address.bldg=MembersArray[flag+1].Address.bldg;
+                        strcpy(MembersArray[flag].LastName,MembersArray[flag+1].LastName);
+                        strcpy(MembersArray[flag].Surname,MembersArray[flag+1].Surname);
+                        strcpy(MembersArray[flag].mail,MembersArray[flag+1].mail);
+                        strcpy(MembersArray[flag].Address.city,MembersArray[flag+1].Address.city);
+                        strcpy(MembersArray[flag].Address.street,MembersArray[flag+1].Address.street);
+                        flag++;
+                    }
+                    LastMember--;
+                    printf("Member data has been deleted successfully!");
+                    }
             }
 
     printf("\n\n");
@@ -688,7 +710,7 @@ void NewBook()
     }while(checkdate==0);
     do{
     printf("\nEnter the book ISBN (ex: 978-3-16-148410-0):\n");
-    fgetc(stdin);
+    fflush(stdin);
     fgets(temp.ISBN,sizeof(temp.ISBN),stdin);
     temp.ISBN[strlen(temp.ISBN) - 1] = 0;
     if(CheckISBN(temp.ISBN)==0)
@@ -982,7 +1004,6 @@ void BookManagement()
             case 6:
                 MainMenu();
         }}}while(input4>6 || input4<1 || CheckInt(input4)==0);
-    printf("\nReturning back to main menu ...\n");
     MainMenu();
 }
 
@@ -1014,7 +1035,6 @@ void MemberManagement()
                 MainMenu();
                 break;
 	}}}while(input5>4 || input5<1 || CheckInt(input5)==0);
-    printf("\nReturning back to main menu ...\n");
     MainMenu();
 }
 
@@ -1046,7 +1066,6 @@ void BorrowManagement()
                 MainMenu();
                 break;
 	}}}while(input6>4 || input6<1 || CheckInt(input6)==0);
-    printf("\nReturning back to main menu ...\n");
     MainMenu();
 }
 
@@ -1074,12 +1093,12 @@ void AdminActions()
                 MainMenu();
                 break;
 	}}}while(input7>3 || input7<1 || CheckInt(input7)==0);
-	printf("\nReturning back to main menu ...\n");
 	MainMenu();
 }
 
 void MainMenu()
 {
+    PopBooks();
     system("cls");
         printf("Date: %d/%d/%d ",DateTime.wDay,DateTime.wMonth,DateTime.wYear);
     if((DateTime.wHour+2)<12)
