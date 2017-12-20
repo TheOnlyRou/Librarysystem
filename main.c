@@ -269,7 +269,7 @@ void PopBooks()
     }
     printf("HOT READS!!\n");
     printf("Book Title \t\t ISBN \t\t\t #Times Borrowed\n");
-    for(i=0;i<Last;i++)
+    for(i=0;i<5;i++)
     {
         printf("%s \t %s \t %d\n",PopularArray[i].title,PopularArray[i].ISBN,PopularArray[i].occur);
     }
