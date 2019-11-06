@@ -1,0 +1,76 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
+
+
+typedef struct{
+    char Surname[30];
+    char LastName[30];
+	int ID;
+	typedef struct{
+    int bldg;
+	char street[50];
+	char city[50]}Address;
+	Address Address;
+	int PhoneNumber;
+	int Age;
+	char mail[50]}Members ;
+	Members MembersArray[100];
+
+	int CheckID(int ID)
+{
+	If(ID/10000!=0 || ID<1000 || isdigit(ID)==0)
+	{display error message "Please enter a legitimate ID number! ID numbers start from 1001 and end at 9999.")
+	 return 1
+	else
+        return 0
+
+
+
+	void Newmember();
+
+	printf("Please enter your Surname");
+	scanf("%s",Members.Surname);
+    printf("Please enter your Lastname");
+    scanf("%s",Members.LastName);
+    printf("Please enter your ID");
+	scanf("%d",Members.ID);
+    CheckID(ID) ;
+	printf("Please enter your phone number");
+	scanf("%d",Members.PhoneNumber);
+	CheckPhone(PhoneNumber);
+	printf("Please enter your Age");
+	scanf("%d",Members.Age);
+	Checkint(Age);
+	printf("Please enter your Email");
+	scanf("%s",Members.mail);
+	printf("Please enter your Building Number");
+	scanf("%d",Members.Address.bldg);
+	printf("Please enter your Street name");
+	scanf("%s",Members.Address.street);
+	printf("Please enter your City's Name");
+	scanf("%s",Members.Address.city);
+
+
+void DeleteMember();
+int id,I;
+int found=0:
+printf("Please enter the ID of the member you want to delete");
+
+do {
+    scanf("%d",&id);
+    CheckID(id);
+    I=0;
+if (MembersArray[I].ID==id)
+{
+ found=1
+}
+I++;
+}while(found=0 && I<100);
+if (found==0)
+printf("The data you entered is not acceptable");
+
+for (I;I<99;I++){
+    MembersArray[I]=MembersArray[I+1];
+}
+
